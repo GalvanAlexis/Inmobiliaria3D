@@ -21,12 +21,12 @@ export default function RoomViewer({
   onNavigate,
 }: RoomViewerProps) {
   const urls = [
-    `${roomName}/px.svg`,
-    `${roomName}/nx.svg`,
-    `${roomName}/py.svg`,
-    `${roomName}/ny.svg`,
-    `${roomName}/pz.svg`,
-    `${roomName}/nz.svg`,
+    `${roomName}/px.png`,
+    `${roomName}/nx.png`,
+    `${roomName}/py.png`,
+    `${roomName}/ny.png`,
+    `${roomName}/pz.png`,
+    `${roomName}/nz.png`,
   ];
 
   return (
