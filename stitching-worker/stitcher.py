@@ -5,8 +5,8 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser(description="Image Stitching Worker for Inmobiliaria3D")
-    parser.add_argument("--mode", default="scans", choices=["panorama", "scans"],
-                        help="Stitcher mode: 'panorama' (outdoor) or 'scans' (indoor/close-up). Default: scans")
+    parser.add_argument("--mode", default="panorama", choices=["panorama", "scans"],
+                        help="Stitcher mode: 'panorama' (outdoor/360) or 'scans' (flat/indoor). Default: panorama")
     parser.add_argument("--job-id", required=True, help="The UUID of the stitch job")
     parser.add_argument("--output", required=True, help="Path to save the stitched image")
     parser.add_argument("--inputs", required=True, nargs='+', help="List of input image paths")
@@ -17,7 +17,7 @@ def main():
     output_path = args.output
     input_paths = args.inputs
 
-    # Validate inputs
+    # Validate and load inputs
     images = []
     for path in input_paths:
         if not os.path.exists(path):
@@ -27,9 +27,14 @@ def main():
         if img is None:
             print(f"ERROR: Could not read image at {path}")
             sys.exit(1)
+        # Auto-rotate portrait photos to landscape — panorama stitching works much
+        # better with landscape orientation (wider horizontal FoV between shots).
+        h, w = img.shape[:2]
+        if h > w:
+            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
         images.append(img)
         
-    print(f"[{job_id}] Loaded {len(images)} images successfully.")
+    print(f"[{job_id}] Loaded {len(images)} images (auto-rotated portrait → landscape if needed).")
 
     # Create Stitcher Object (OpenCV 4.x+)
     mode = cv2.Stitcher_SCANS if args.mode == "scans" else cv2.Stitcher_PANORAMA
