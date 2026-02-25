@@ -5,6 +5,8 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser(description="Image Stitching Worker for Inmobiliaria3D")
+    parser.add_argument("--mode", default="scans", choices=["panorama", "scans"],
+                        help="Stitcher mode: 'panorama' (outdoor) or 'scans' (indoor/close-up). Default: scans")
     parser.add_argument("--job-id", required=True, help="The UUID of the stitch job")
     parser.add_argument("--output", required=True, help="Path to save the stitched image")
     parser.add_argument("--inputs", required=True, nargs='+', help="List of input image paths")
@@ -30,7 +32,8 @@ def main():
     print(f"[{job_id}] Loaded {len(images)} images successfully.")
 
     # Create Stitcher Object (OpenCV 4.x+)
-    stitcher = cv2.Stitcher_create(cv2.Stitcher_PANORAMA)
+    mode = cv2.Stitcher_SCANS if args.mode == "scans" else cv2.Stitcher_PANORAMA
+    stitcher = cv2.Stitcher_create(mode)
     
     print(f"[{job_id}] Attempting to stitch images... This may take a while.")
     status, pano = stitcher.stitch(images)
